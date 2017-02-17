@@ -1,0 +1,23 @@
+language: python
+python:
+  - "2.7"
+
+services:
+  - docker
+
+git:
+  depth: 3
+
+before_install:
+  - sudo -H apt-get update -qq
+
+install:
+  - sudo -H pip install http://releases.ansible.com/ansible/ansible-2.2.1.0.tar.gz
+  - echo -e 'localhost  ansible_connection=local' > tests/inventory
+  - echo -e '[defaults]\nroles_path = ../\nhostfile = ./tests/inventory' > ansible.cfg
+
+script:
+  - ansible-playbook --syntax-check tests/role.yml
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/

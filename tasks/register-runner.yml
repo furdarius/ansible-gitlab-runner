@@ -1,0 +1,17 @@
+---
+- name: List configured runners
+  command: gitlab-ci-multi-runner list
+  register: configured_runners
+  changed_when: false
+
+- name: Register runner to GitLab
+  command: gitlab-ci-multi-runner register >
+    --non-interactive
+    --url '{{ gitlab_runner_coordinator_url }}'
+    --registration-token '{{ gitlab_runner_registration_token }}'
+    --name '{{ gitlab_runner_name }}'
+    --tag-list '{{ gitlab_runner_tags | join(",") }}'
+    --executor shell
+    --builds-dir '{{ gitlab_runner_persistent_dir }}/builds'
+    --cache-dir '{{ gitlab_runner_persistent_dir }}/cache'
+  when: configured_runners.stdout.find("{{ gitlab_runner_name }}") == -1
